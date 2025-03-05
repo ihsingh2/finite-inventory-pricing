@@ -1,22 +1,37 @@
 import math
 import numpy as np
-from constants import K, T, DEMAND_MEAN_SCALE, DEMAND_MEAN_BASE
-
-def poisson_pmf(mean, x):
-    """ Calculates the probability of sampling x from a Poisson distribution of given mean. """
-
-    return (math.exp(-mean) * mean**x) / math.factorial(x)
+from constants import K, T, DEMAND_MEAN_SCALE, DEMAND_MEAN_BASE, DEMAND_DISTRIBUTION
 
 def demand_function(price):
-    """ Returns the mean (lambda parameter) for the Poisson distribution based on price. """
+    """ Returns the mean for the demand distribution for a given price. """
 
     return DEMAND_MEAN_SCALE * math.exp(-DEMAND_MEAN_BASE * price)
 
-def sample_demand(price):
-    """ Samples a demand at the given price from Poisson distribution. """
+def probability_mass_fn(mean, x):
+    """ Calculates the probability of sampling x from a Poisson distribution of given mean. """
 
-    lam = demand_function(price)
-    return np.random.poisson(lam)
+    if DEMAND_DISTRIBUTION == 'poisson':
+        return (math.exp(-mean) * mean**x) / math.factorial(x)
+
+    if DEMAND_DISTRIBUTION == 'binomial':
+        return math.comb(K, x) * (mean / K)**x * (1 - (mean / K))**(K - x)
+
+    if DEMAND_DISTRIBUTION == 'geometric':
+        return (1 - (1 / mean))**(x - 1) * (1 / mean)
+
+def sample_demand(price):
+    """ Samples a demand at the given price from the distribution. """
+
+    mean = demand_function(price)
+
+    if DEMAND_DISTRIBUTION == 'poisson':
+        return np.random.poisson(mean)
+
+    if DEMAND_DISTRIBUTION == 'binomial':
+        return np.random.binomial(K, mean / K)
+
+    if DEMAND_DISTRIBUTION == 'geometric':
+        return np.random.geometric(1 / mean)
 
 def expected_reward(inventory, time, price):
     """ Calculates the expected reward for a given state (inventory, time) and action (price). """
@@ -28,7 +43,7 @@ def expected_reward(inventory, time, price):
 
     # Iterate over all possible small demands
     for d in range(inventory):
-        prob = poisson_pmf(lam, d)
+        prob = probability_mass_fn(lam, d)
         expected_reward += prob * price * d
         cum_prob += prob
 
@@ -53,8 +68,8 @@ def transition_prob(inventory, time, price, next_inventory, next_time):
 
     # Probability of demand clearing the inventory
     if next_inventory == 0 and inventory > 0:
-        return 1 - sum(poisson_pmf(lam, d) for d in range(inventory))
+        return 1 - sum(probability_mass_fn(lam, d) for d in range(inventory))
 
     # Probability of smaller demands
     demand = inventory - next_inventory
-    return poisson_pmf(lam, demand)
+    return probability_mass_fn(lam, demand)

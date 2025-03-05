@@ -103,6 +103,7 @@
 % figures
 \usepackage{graphicx}
 \usepackage{subcaption}
+\captionsetup{justification=centering,singlelinecheck=false}
 
 % box
 \usepackage{tcolorbox}

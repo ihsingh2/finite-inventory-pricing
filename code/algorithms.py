@@ -145,9 +145,10 @@ def q_learning(verbose=False):
         alpha = math.ceil(10 / (episode + 1))
 
         # Initialize state and reward
-        starting_inventory = np.random.randint(1, K+1)
+        starting_inventory = np.random.randint(1, K + 1)
+        starting_time = np.random.randint(1, T + 1)
         inventory = starting_inventory
-        time = T
+        time = starting_time
         episode_reward = 0
 
         # Iterate over step of episode
@@ -192,7 +193,7 @@ def q_learning(verbose=False):
 
         # Calculate regret
         episode_rewards.append(episode_reward)
-        episode_regrets.append(V_opt[(starting_inventory, T)] - episode_reward)
+        episode_regrets.append(V_opt[(starting_inventory, starting_time)] - episode_reward)
         cumulative_rewards.append(cumulative_rewards[-1] + episode_rewards[-1])
         cumulative_regrets.append(cumulative_regrets[-1] + episode_regrets[-1])
 
@@ -234,9 +235,10 @@ def sarsa_lambda(verbose=False):
         alpha = math.ceil(10 / (episode + 1))
 
         # Initialize state, reward and eligibility trace
-        starting_inventory = np.random.randint(1, K+1)
+        starting_inventory = np.random.randint(1, K + 1)
+        starting_time = np.random.randint(1, T + 1)
         inventory = starting_inventory
-        time = T
+        time = starting_time
         episode_reward = 0
         E = {}
 
@@ -298,7 +300,7 @@ def sarsa_lambda(verbose=False):
 
         # Calculate regret
         episode_rewards.append(episode_reward)
-        episode_regrets.append(V_opt[(starting_inventory, T)] - episode_reward)
+        episode_regrets.append(V_opt[(starting_inventory, starting_time)] - episode_reward)
         cumulative_rewards.append(cumulative_rewards[-1] + episode_rewards[-1])
         cumulative_regrets.append(cumulative_regrets[-1] + episode_regrets[-1])
 
