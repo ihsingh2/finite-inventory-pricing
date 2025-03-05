@@ -83,13 +83,13 @@ if __name__ == "__main__":
     if args.method in ["all", "q-learning"]:
         Q_ql, policy_ql, metrics_ql = q_learning(verbose=args.verbose)
         optimal_value = max([ Q_ql[(K, T, price)] for price in PRICES ])
-        print(f"Finished Q-Learning with optimal value {optimal_value:.2f}")
+        print(f"Finished Q-Learning with estimated value {optimal_value:.2f}")
         plot_policy(policy_ql, title="Q-Learning: Learned Pricing Policy")
         plot_metrics(metrics_ql, "Q-Learning: Evolution of Metrics")
 
     if args.method in ["all", "sarsa"]:
         Q_sarsa, policy_sarsa, metrics_sarsa = sarsa_lambda(verbose=args.verbose)
         optimal_value = max([ Q_sarsa[(K, T, price)] for price in PRICES ])
-        print(f"Finished SARSA(λ={TRACE_DECAY:.2f}) with optimal value {optimal_value:.2f}")
+        print(f"Finished SARSA(λ={TRACE_DECAY:.2f}) with estimated value {optimal_value:.2f}")
         plot_policy(policy_sarsa, title=f"SARSA(λ={TRACE_DECAY:.2f}): Learned Pricing Policy")
         plot_metrics(metrics_sarsa, f"SARSA(λ={TRACE_DECAY:.2f}): Evolution of Metrics")
