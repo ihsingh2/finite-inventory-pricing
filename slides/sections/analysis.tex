@@ -1,9 +1,41 @@
 \section{Analysis}
 
-\begin{frame}{Analysis: ??}
-TODO
+\begin{frame}{Analysis: Effect of Exploration}
+\begin{figure}
+    \centering
+    \begin{subfigure}{\textwidth}
+        \centering
+        \includegraphics[width=\textwidth]{epsilon_policy.png}
+        \caption{Learned Policy}
+    \end{subfigure}
+    \begin{subfigure}{\textwidth}
+        \centering
+        \includegraphics[width=0.9\textwidth]{epsilon_metrics.png}
+        \caption{Episodic Rewards and Regrets}
+    \end{subfigure}
+    \caption{Q-Learning at different levels of $\epsilon-$greedy Exploration}
+\end{figure}
+\end{frame}
+
+\begin{frame}{Analysis: Effect of Trace Decay Parameter}
+\begin{figure}
+    \centering
+    \begin{subfigure}{\textwidth}
+        \centering
+        \includegraphics[width=\textwidth]{lambda_policy.png}
+        \caption{Learned Policy}
+    \end{subfigure}
+    \begin{subfigure}{\textwidth}
+        \centering
+        \includegraphics[width=0.9\textwidth]{lambda_metrics.png}
+        \caption{Episodic Rewards and Regrets}
+    \end{subfigure}
+    \caption{SARSA($\lambda$) at different levels of Trace Decay}
+\end{figure}
 \end{frame}
 
 \begin{frame}{Conclusion}
-TODO
+\begin{itemize}
+    \item TODO
+\end{itemize}
 \end{frame}

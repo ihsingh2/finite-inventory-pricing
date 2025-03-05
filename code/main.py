@@ -9,7 +9,6 @@ def plot_policy(policy, title):
     """ Plot the pricing policy as a heatmap. """
 
     policy_matrix = np.zeros((K, T))
-
     for inv in range(1, K + 1):
         for t in range(1, T + 1):
             policy_matrix[inv - 1, t - 1] = policy[(inv, t)]

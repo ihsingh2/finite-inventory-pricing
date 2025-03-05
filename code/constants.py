@@ -18,4 +18,4 @@ TRACE_DECAY = 0.95                          # Decay eligibility trace by a scale
 
 # Miscellaneous
 LOG_FREQUENCY = 10000                       # Log progress after a number of iterations
-GAUSSIAN_SMOOTHING_STD = 100.0              # Smoothening parameter for per episode metrics
+GAUSSIAN_SMOOTHING_STD = 500.0              # Smoothening parameter for per episode metrics

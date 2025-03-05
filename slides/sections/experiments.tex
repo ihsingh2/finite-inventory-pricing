@@ -1,13 +1,35 @@
 \section{Experiments}
 
 \begin{frame}{Experiment: Learned Policies}
+\begin{figure}
+    \centering
+    \begin{subfigure}{\textwidth}
+        \centering
+        \includegraphics[width=\textwidth]{policy.png}
+        \caption{Actual Policy}
+    \end{subfigure}
+    \begin{subfigure}{\textwidth}
+        \centering
+        \includegraphics[width=\textwidth]{policy_smooth.png}
+        \caption{Gaussian filtered ($\sigma = 1$) \footnote{Equivalent to averaging in a $3 \times 3$ window.}}
+    \end{subfigure}
+    \caption{Policy Learned by Different Algorithms}
+\end{figure}
 \end{frame}
 
 \begin{frame}{Experiment: Rewards and Regrets}
-\end{frame}
-
-\begin{frame}{Experiment: Effect of Exploration ($\epsilon-greedy$)}
-\end{frame}
-
-\begin{frame}{Experiment: Effect of Trace Decay Parameter}
+\begin{figure}
+    \centering
+    \begin{subfigure}{\textwidth}
+        \centering
+        \includegraphics[width=0.9\textwidth]{reward.png}
+        \caption{Episodic and Cumulative Rewards}
+    \end{subfigure}
+    \begin{subfigure}{\textwidth}
+        \centering
+        \includegraphics[width=0.9\textwidth]{regret.png}
+        \caption{Episodic and Cumulative Regrets \footnote{All episodic metrics in the presentation are Gaussian filtered using $\sigma = 500$, equivalent to averaging over 2000 entries.}}
+    \end{subfigure}
+    \caption{Rewards and Regrets incurred by Different Algorithms}
+\end{figure}
 \end{frame}
