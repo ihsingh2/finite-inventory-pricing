@@ -17,7 +17,7 @@
 \end{figure}
 \end{frame}
 
-\begin{frame}{Analysis: Effect of Trace Decay Parameter}
+\begin{frame}{Analysis: Effect of Trace Decay}
 \begin{figure}
     \centering
     \begin{subfigure}{\textwidth}
@@ -36,6 +36,10 @@
 
 \begin{frame}{Conclusion}
 \begin{itemize}
-    \item TODO
+    \setlength\itemsep{1.5em}
+    \item Learned policies lacked similarity in close neighbourhood, contrary to our intuitive understanding.
+    \item Convergence rate was similar in Q-Learning and SARSA($\lambda$). However, Q-Learning got closer to the optimal policy and acquired less regret.
+    \item Higher exploration improved the policy and speed of convergence, but resulted in more regret.
+    \item Policies learned with smaller trace decay (higher $\lambda$) appeared to be closer to the optimal policy. However, the effect was not very prominent.
 \end{itemize}
 \end{frame}
