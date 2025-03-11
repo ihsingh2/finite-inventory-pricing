@@ -126,6 +126,8 @@ def q_learning(verbose=False):
             P[(inv, t)] = PRICES[0]
 
     # Initialize list to store metrics
+    starting_values = []
+    starting_policies = []
     episode_rewards = []
     episode_regrets = []
     cumulative_rewards = [0.0, ]
@@ -141,8 +143,9 @@ def q_learning(verbose=False):
         if verbose and episode % LOG_FREQUENCY == 0 and episode > 0:
             print(f"Evaluating for episode {episode}")
 
-        # Learning rate for current episode (https://arxiv.org/abs/2110.15093)
+        # Learning rate and epsilon for current episode (https://arxiv.org/abs/2110.15093)
         alpha = math.ceil(10 / (episode + 1))
+        epsilon = max(0.1, EPSILON * (1 - (episode / (0.67 * NUM_EPISODES))))
 
         # Initialize state and reward
         starting_inventory = np.random.randint(1, K + 1)
@@ -155,7 +158,7 @@ def q_learning(verbose=False):
         while time > 0 and inventory > 0:
 
             # Choose an epsilon-greedy action
-            if np.random.random() < EPSILON:
+            if np.random.random() < epsilon:
                 price = np.random.choice(PRICES)
             else:
                 price = P[(inventory, time)]
@@ -192,12 +195,16 @@ def q_learning(verbose=False):
                 break
 
         # Calculate regret
+        starting_values.append([ Q[(K, T, price)] for price in PRICES ])
+        starting_policies.append(P[(K, T)])
         episode_rewards.append(episode_reward)
         episode_regrets.append(V_opt[(starting_inventory, starting_time)] - episode_reward)
         cumulative_rewards.append(cumulative_rewards[-1] + episode_rewards[-1])
         cumulative_regrets.append(cumulative_regrets[-1] + episode_regrets[-1])
 
     return Q, P, {
+        'starting_values': starting_values,
+        'starting_policies': starting_policies,
         'episode_rewards': episode_rewards,
         'episode_regrets': episode_regrets,
         'cumulative_rewards': cumulative_rewards[1:],
@@ -217,6 +224,8 @@ def sarsa_lambda(verbose=False):
             P[(inv, t)] = PRICES[0]
 
     # Initialize list to store metrics
+    starting_values = []
+    starting_policies = []
     episode_rewards = []
     episode_regrets = []
     cumulative_rewards = [0.0, ]
@@ -231,8 +240,9 @@ def sarsa_lambda(verbose=False):
         if verbose and episode % LOG_FREQUENCY == 0 and episode > 0:
             print(f"Evaluating for episode {episode}")
 
-        # Learning rate for current episode (https://arxiv.org/abs/2110.15093)
+        # Learning rate and epsilon for current episode (https://arxiv.org/abs/2110.15093)
         alpha = math.ceil(10 / (episode + 1))
+        epsilon = max(0.1, EPSILON * (1 - (episode / (0.67 * NUM_EPISODES))))
 
         # Initialize state, reward and eligibility trace
         starting_inventory = np.random.randint(1, K + 1)
@@ -243,7 +253,7 @@ def sarsa_lambda(verbose=False):
         E = {}
 
         # Choose an epsilon-greedy action
-        if np.random.random() < EPSILON:
+        if np.random.random() < epsilon:
             price = np.random.choice(PRICES)
         else:
             price = P[(inventory, time)]
@@ -260,7 +270,7 @@ def sarsa_lambda(verbose=False):
             next_time = time - 1
 
             # Choose an epsilon-greedy next action
-            if np.random.random() < EPSILON:
+            if np.random.random() < epsilon:
                 next_price = np.random.choice(PRICES)
             else:
                 next_price = P[(next_inventory, next_time)]
@@ -299,12 +309,16 @@ def sarsa_lambda(verbose=False):
                 break
 
         # Calculate regret
+        starting_values.append([ Q[(K, T, price)] for price in PRICES ])
+        starting_policies.append(P[(K, T)])
         episode_rewards.append(episode_reward)
         episode_regrets.append(V_opt[(starting_inventory, starting_time)] - episode_reward)
         cumulative_rewards.append(cumulative_rewards[-1] + episode_rewards[-1])
         cumulative_regrets.append(cumulative_regrets[-1] + episode_regrets[-1])
 
     return Q, P, {
+        'starting_values': starting_values,
+        'starting_policies': starting_policies,
         'episode_rewards': episode_rewards,
         'episode_regrets': episode_regrets,
         'cumulative_rewards': cumulative_rewards[1:],

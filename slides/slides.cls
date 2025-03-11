@@ -123,3 +123,5 @@
 \DeclareMathOperator{\E}{E}
 \DeclareMathOperator{\adj}{adj}
 \DeclarePairedDelimiter\abs{\lvert}{\rvert}
+\DeclarePairedDelimiter\ceil{\lceil}{\rceil}
+\DeclarePairedDelimiter\floor{\lfloor}{\rfloor}

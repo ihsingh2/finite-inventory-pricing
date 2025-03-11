@@ -37,9 +37,10 @@
 \begin{frame}{Conclusion}
 \begin{itemize}
     \setlength\itemsep{1.5em}
-    \item Learned policies lacked similarity in close neighbourhood, contrary to our intuitive understanding.
+    \item Learned policies tend to clear inventory faster than optimal policy, when nearing the end of booking window.
+    \item Learned policies lacked similarity in close neighbourhood, likely due to the possibility of covering up for initial choices later.
     \item Convergence rate was similar in Q-Learning and SARSA($\lambda$). However, Q-Learning got closer to the optimal policy and acquired less regret.
-    \item Higher exploration improved the policy and speed of convergence, but resulted in more regret.
-    \item Policies learned with smaller trace decay (higher $\lambda$) appeared to be closer to the optimal policy. However, the effect was not very prominent.
+    \item Q-Learning tends to overestimate the value function initially, slowly stabilising as the number of episodes increases.
+    \item The effect of exploration and trace decay parameter is not very prominent in the value function, but tends to influence the policy slightly.
 \end{itemize}
 \end{frame}
