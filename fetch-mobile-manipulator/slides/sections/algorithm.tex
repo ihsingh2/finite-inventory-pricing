@@ -1,0 +1,123 @@
+\section{Algorithms}
+
+\begin{frame}{Hindsight Experience Replay (HER)}
+    \begin{algorithm}[H]
+        \captionsetup{font=scriptsize}
+        \caption{Hindsight Experience Replay}
+        \begin{algorithmic}[1]
+        \scriptsize
+        \REQUIRE Off-policy RL algorithm $\mathcal{A}$ (e.g., DDPG, TD3).
+        \REQUIRE Reward function $r: \mathcal{S} \times \mathcal{A} \times \mathcal{G} \to \mathbb{R}$.
+        \REQUIRE Strategy $\mathcal{S}$ for sampling hindsight goals.
+        \REQUIRE Hindsight-to-original goal ratio $k$.
+        \STATE Initialize algorithm $\mathcal{A}$, replay buffer $\mathcal{R}$.
+        \FOR{episode = 1 to M}
+            \STATE Sample initial state $s_0$ and goal $g$. Store episode trajectory $\tau = (s_0, a_0, ..., s_T)$.
+            \FOR{$t = 0$ to $T-1$}
+                \STATE Compute reward $r_t = r(s_t, a_t, g)$.
+                \STATE Store original transition $(s_t || g, a_t, r_t, s_{t+1} || g)$ in $\mathcal{R}$. \COMMENT{Store with original goal}
+                \STATE Sample set of additional goals $\mathcal{G}' = \mathcal{S}(\text{episode } \tau)$.
+                \FOR{$g' \in \mathcal{G}'$}
+                     \STATE Compute hindsight reward $r'_t = r(s_t, a_t, g')$.
+                     \STATE Store hindsight transition $(s_t || g', a_t, r'_t, s_{t+1} || g')$ in $\mathcal{R}$. \COMMENT{Store with hindsight goal}
+                \ENDFOR
+            \ENDFOR
+            \FOR{optimization step = 1 to N}
+                 \STATE Sample mini-batch $B$ from $\mathcal{R}$.
+                 \STATE Perform optimization step using $\mathcal{A}$ on $B$.
+            \ENDFOR
+        \ENDFOR
+        \end{algorithmic}
+    \end{algorithm}
+\end{frame}
+
+\begin{frame}{Deep Deterministic Policy Gradient (DDPG)}
+    \begin{algorithm}[H]
+        \captionsetup{font=scriptsize}
+        \caption{Deep Deterministic Policy Gradient}
+        \begin{algorithmic}[1]
+        \scriptsize
+        \STATE Initialize replay buffer $\mathcal{D}$, critic $Q(s, u, w)$ and actor $\mu_\theta(s)$ with random weights $w, \theta$.
+        \STATE Initialize target networks $Q'$ and $\mu'$ with weights $w' \leftarrow w$, $\theta' \leftarrow \theta$.
+        \FOR{episode = 1, M}
+            \STATE Initialize noise process $\mathcal{N}$. Receive initial state $s_1$.
+            \FOR{t = 1, T}
+                \STATE Select action $u_t = \mu(s_t, \theta) + \mathcal{N}_t$.
+                \STATE Execute $u_t$, observe reward $r_t$ and next state $s_{t+1}$.
+                \STATE Store transition $(s_t, u_t, r_t, s_{t+1})$ in $\mathcal{D}$.
+                \STATE Sample a random mini-batch of $N$ transitions $(s_i, u_i, r_{i}, s_{i+1})$ from $\mathcal{D}$.
+                \STATE Set target $y_i = r_i + \gamma Q'(s_{i+1}, \mu'(s_{i+1}, \theta'), w')$.
+                \STATE Update critic by minimizing the loss: $L = \frac{1}{N} \sum_i (y_i - Q(s_i, u_i, w))^2$.
+                \STATE Update the actor policy using the sampled policy gradient:
+                \[ \nabla_\theta J \approx \frac{1}{N} \sum_i \nabla_\theta \mu(s_i, \theta) \nabla_u Q(s_i, u, w)|_{u=\mu(s_i, \theta)} \]
+                \STATE Update the target networks:
+                \begin{align*}
+                    w' &\leftarrow \tau w + (1-\tau) w' \\
+                    \theta' &\leftarrow \tau \theta + (1-\tau) \theta'
+                \end{align*}
+            \ENDFOR
+        \ENDFOR
+        \end{algorithmic}
+    \end{algorithm}
+\end{frame}
+
+\begin{frame}{Twin Delayed DDPG (TD3)}
+    \begin{algorithm}[H]
+        \captionsetup{font=scriptsize}
+        \caption{Twin Delayed Deep Deterministic Policy Gradient}
+        \begin{algorithmic}[1]
+        \scriptsize
+        \STATE Initialize critic networks $Q_{w_1}, Q_{w_2}$, actor network $\mu_{\theta}$.
+        \STATE Initialize target networks $w'_1 \leftarrow w_1, w'_2 \leftarrow w_2, \theta' \leftarrow \theta$.
+        \STATE Initialize replay buffer $\mathcal{D}$.
+        \FOR{t = 1, T}
+            \STATE Select action with exploration noise: $u_t = \mu(s_t, \theta) + \epsilon$, $\epsilon \sim \mathcal{N}(0, \sigma_{explore})$.
+            \STATE Execute $u_t$, observe $r_t, s_{t+1}$. Store $(s_t, u_t, r_t, s_{t+1})$ in $\mathcal{D}$.
+            \STATE Sample mini-batch of $N$ transitions $(s, u, r, s')$ from $\mathcal{D}$.
+            \STATE Compute target action with noise: $\tilde{a} \leftarrow \mu'(s', \theta') + \epsilon'$, $\epsilon' \sim \text{clip}(\mathcal{N}(0, \sigma_{target}), -c, c)$. Clip $\tilde{a}$ to valid action range.
+            \STATE Compute target Q value: $y \leftarrow r + \gamma \min_{i=1,2} Q'_{w'_i}(s', \tilde{a})$. \COMMENT{Clipped Double Q + Target Smoothing}
+            \STATE Update critics $Q_{w_1}, Q_{w_2}$ using gradient descent on $\frac{1}{N}\sum (y - Q_{w_i}(s, u))^2$.
+            \IF{t mod d == 0}
+                \STATE Update actor $\mu_\theta$ using the deterministic policy gradient w.r.t. $Q_{w_1}$:
+                \[ \nabla_\theta J \approx \frac{1}{N} \sum \nabla_\theta \mu_\theta(s) \nabla_u Q_{w_1}(s, u)|_{u=\mu_\theta(s)} \]
+                \STATE Update target networks using soft updates ($\tau \ll 1$):
+                \begin{align*}
+                    w'_i &\leftarrow \tau w_i + (1-\tau) w'_i \quad \text{for } i=1,2 \\
+                    \theta' &\leftarrow \tau \theta + (1-\tau) \theta'
+                \end{align*}
+            \ENDIF
+        \ENDFOR
+        \end{algorithmic}
+    \end{algorithm}
+\end{frame}
+
+\begin{frame}{Soft Actor Critic (SAC)}
+    \begin{algorithm}[H]
+        \captionsetup{font=scriptsize}
+        \caption{Soft Actor-Critic}
+        \begin{algorithmic}[1]
+        \scriptsize
+        \STATE Initialize critic networks $Q_{w_1}, Q_{w_2}$, actor network $\pi_{\theta}(a|s)$.
+        \STATE Initialize replay buffer $\mathcal{D}$, target networks $w'_1 \leftarrow w_1, w'_2 \leftarrow w_2$.
+        \STATE Initialize temperature parameter $\alpha$ (either fixed or learned). Set target entropy $\mathcal{H}$ if learning $\alpha$.
+        \FOR{each interaction step}
+            \STATE Observe state $s_t$. Sample action $a_t \sim \pi_\theta(a|s_t)$.
+            \STATE Execute $a_t$, observe $r_t, s_{t+1}$. Store $(s_t, a_t, r_t, s_{t+1})$ in $\mathcal{D}$.
+            \STATE Sample mini-batch of $N$ transitions $(s, a, r, s')$ from $\mathcal{D}$.
+            \STATE Sample next action $a' \sim \pi_\theta(a'|s')$ and compute log-probability $\log \pi_\theta(a'|s')$.
+            \STATE Compute target value: $y = r + \gamma \left( \min_{i=1,2} Q'_{w'_i}(s', a') - \alpha \log \pi_\theta(a'|s') \right)$.
+            \STATE Update critic networks $Q_{w_1}, Q_{w_2}$ by minimizing:
+            \( L_Q = \frac{1}{N} \sum_{i=1}^N \left( (y_i - Q_{w_1}(s_i, a_i))^2 + (y_i - Q_{w_2}(s_i, a_i))^2 \right) \)
+            \STATE Sample action $\tilde{a} \sim \pi_\theta(\tilde{a}|s)$ (using reparameterization trick) and compute log-probability $\log \pi_\theta(\tilde{a}|s)$.
+            \STATE Update actor network $\pi_\theta$ by maximizing the objective:
+            \[ J_\pi(\theta) \approx \frac{1}{N} \sum_{i=1}^N \left( \min_{j=1,2} Q_{w_j}(s_i, \tilde{a}_i) - \alpha \log \pi_\theta(\tilde{a}_i|s_i) \right) \]
+            \STATE Update $\alpha$ by minimizing the loss:
+            \( L_\alpha = \frac{1}{N} \sum_{i=1}^N (-\log \alpha (\log \pi_\theta(\tilde{a}_i|s_i) + \mathcal{H})) \)
+            \STATE Update the target networks using soft updates ($\tau \ll 1$):
+            \begin{align*}
+                w'_i &\leftarrow \tau w_i + (1-\tau) w'_i \quad \text{for } i=1,2
+            \end{align*}
+        \ENDFOR
+        \end{algorithmic}
+    \end{algorithm}
+\end{frame}

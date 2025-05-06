@@ -1,0 +1,38 @@
+\documentclass[9pt, aspectratio=169]{slides}
+
+% figures
+\graphicspath{ {./figures/} }
+
+% tables
+\usepackage{booktabs}
+\usepackage{algorithm}
+\usepackage{algorithmic}
+\usepackage{caption}
+\makeatletter
+\AtBeginEnvironment{algorithmic}{\small}
+\makeatother
+
+% meta
+\title{{\normalsize Topics in Reinforcement Learning} \\ \vspace{0.5em} Deep RL Project: Fetch Reach and Push}
+\author{Team 7 \\ \vspace{0.5em} Himanshu Singh \and Vikaskumar Kalsariya}
+\date{May 6, 2025}
+
+\begin{document}
+
+% title
+\begin{frame}
+    \titlepage
+\end{frame}
+
+% toc
+\begin{frame}{Table of Contents}
+    \tableofcontents
+\end{frame}
+
+% content
+\include{./sections/introduction}
+\include{./sections/algorithm}
+\include{./sections/experiment}
+\include{./sections/analysis}
+
+\end{document}
