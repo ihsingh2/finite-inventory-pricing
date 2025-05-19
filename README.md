@@ -32,11 +32,9 @@
 
 ## Fetch Reach and Push
 
-
-
 <table>
     <tr>
-        <td align="center"><video src="fetch-mobile-manipulator/demo.mp4" width="200" controls></video></td>
+        <td align="center"><img src="fetch-mobile-manipulator/demo.gif" width="200"></td>
         <td align="center"><img src="fetch-mobile-manipulator/slides/figures/FetchReach-v3_error_margin.png" width="200"></td>
         <td align="center"><img src="fetch-mobile-manipulator/slides/figures/FetchReach-v3_q_value_obs_EE_Vel_Z.png" width="200"></td>
     </tr>
