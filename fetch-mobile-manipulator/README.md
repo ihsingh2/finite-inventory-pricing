@@ -1,4 +1,4 @@
-# Fetch Push and Reach
+# Fetch Reach and Push
 
 ## Brief
 
